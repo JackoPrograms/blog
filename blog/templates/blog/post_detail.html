@@ -1,0 +1,114 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% load static %}
+{% block import %}
+    <!-- Подключаем CSS файл и добавляем JavaScript код для обработки изображений -->
+    <link rel="stylesheet" type="text/css" href="{% static 'blog/css/article.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        // Находим все изображения внутри ck-content
+        const images = document.querySelectorAll('.ck-content img');
+        images.forEach(img => {
+            // Убираем атрибуты ширины и высоты у изображения
+            img.removeAttribute('width');
+            img.removeAttribute('height');
+            // Устанавливаем стиль ширины на 100% и высоту на auto
+            img.style.maxWidth = '100%';
+            img.style.height = 'auto';
+            
+            // Если изображение больше определенного размера (например, 500px), добавляем класс large-image
+            if (img.naturalWidth > 500) {
+                img.classList.add('large-image');
+            }
+        });
+
+        // Инициализация highlight.js для всех блоков кода
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
+        // Создание меню из заголовков
+        const content = document.querySelector('.ck-content');
+        const toc = document.getElementById('table-of-contents');
+        if (content && toc) {
+            const headers = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headers.forEach((header, index) => {
+                const id = `header-${index}`;
+                header.setAttribute('id', id);
+                const link = document.createElement('a');
+                link.setAttribute('href', `#${id}`);
+                link.textContent = header.textContent;
+                const listItem = document.createElement('li');
+                listItem.classList.add(`toc-${header.tagName.toLowerCase()}`); // Добавляем класс в зависимости от уровня заголовка
+                listItem.appendChild(link);
+                toc.appendChild(listItem);
+            });
+        }
+
+        // Обработка выделения текущих заголовков при прокрутке
+        const sections = document.querySelectorAll('.ck-content h1, .ck-content h2, .ck-content h3, .ck-content h4, .ck-content h5, .ck-content h6');
+        const tocLinks = document.querySelectorAll('#table-of-contents a');
+
+        // Использование Intersection Observer API для отслеживания заголовков
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                const id = entry.target.getAttribute('id');
+                const tocLink = document.querySelector(`#table-of-contents a[href="#${id}"]`);
+
+                if (entry.isIntersecting) {
+                    tocLink.classList.add('active');
+                } else {
+                    tocLink.classList.remove('active');
+                }
+            });
+        }, {
+            rootMargin: '-20% 0px -80% 0px' // Изменить rootMargin, чтобы регулировать момент срабатывания
+        });
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    });
+    </script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="content-column">
+        <!-- Заголовок статьи -->
+        <h1>{{ post.title }}</h1>
+        <!-- Дата публикации статьи -->
+        <p class="text-muted">Опубликовано {{ post.created_at }}</p>
+        <hr>
+        <!-- Если у статьи есть изображение, выводим его -->
+        {% if post.image %}
+        <div class="post-image-container">
+            <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+        </div>
+        {% endif %}
+        <!-- Контент статьи, отформатированный CKEditor -->
+        <div class="ck-content" style="padding-bottom: 40px;">
+            {{ post.content|safe }} <!-- CKEditor Content -->
+        </div>
+        <!-- Кнопка "Назад к статьям" -->
+        {% if post.category.name == 'security' %}
+            <a href="{% url 'security' %}" class="btn btn-secondary">Назад к статьям</a>
+        {% elif post.category.name == 'pentest' %}
+            <a href="{% url 'pentest' %}" class="btn btn-secondary">Назад к статьям</a>
+        {% else %}
+            <a href="{% url 'home' %}" class="btn btn-secondary">Назад к статьям</a>
+        {% endif %}
+    </div>
+    <div class="sidebar-column">
+        <!-- Содержимое боковой колонки -->
+        <div class="sidebar-content img-thumbnail">
+            <h4>Содержание</h4>
+            <ul id="table-of-contents"></ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

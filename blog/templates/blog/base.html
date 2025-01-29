@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Blog{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    {% block import %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'home' %}">S · I · N · D</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Левая часть меню -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'pentest' %}">Пентест</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'security' %}">Безопасность</a>
+                </li>
+            </ul>
+
+            <!-- Правая часть меню (кнопки Вход, Регистрация или Выход) -->
+            <ul class="navbar-nav ml-auto align-items-center">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Выход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}" style="padding: 0;">
+                            {% load static %}
+                            {% if user.profile.image %}
+                                <img src="{{ user.profile.image.url }}" alt="Профильное изображение"
+                                     style="height: 40px; width: 40px; object-fit: cover;">
+                            {% else %}
+                                <img src="{% static 'blog/images/default_profile.png' %}" alt="Профильное изображение"
+                                     style="height: 40px; width: 40px; object-fit: cover;">
+                            {% endif %}
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Вход</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">Регистрация</a>
+                    </li>
+                {% endif %}
+            </ul>                      
+        </div>
+    </nav>
+
+    <div class="container mt-4" style="padding-bottom: 30px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="text-white mt-4" style="background-color: #929FAB;">
+        <div class="container" style="padding-top: 50px; padding-bottom: 60px;">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About Us</h5>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Information</h5>
+                    <ul class="list-unstyled">
+                        <li>Email: info@example.com</li>
+                        <li>Phone: (123) 456-7890</li>
+                        <li>Address: 123 Main St, Anytown, USA</li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <ul class="list-inline">
+                        <li class="list-inline-item"><a href="#" class="text-white">Facebook</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-white">Twitter</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-white">Instagram</a></li>
+                        <li class="list-inline-item"><a href="#" class="text-white">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <p class="mb-0">&copy; 2024 S · I · N · D. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-md-right">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="{% url 'home' %}" class="text-white">Home</a></li>
+                        <li class="list-inline-item"><a href="{% url 'register' %}" class="text-white">Register</a></li>
+                        <li class="list-inline-item"><a href="{% url 'pentest' %}" class="text-white">Pentest</a></li>
+                        <li class="list-inline-item"><a href="{% url 'security' %}" class="text-white">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

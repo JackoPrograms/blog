@@ -1,0 +1,25 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<h1>Профиль пользователя</h1>
+<p><strong>Логин:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+
+<img src="{{ user.profile.image.url }}" class="rounded" alt="Фото профиля" style="max-height: 200px;">
+
+<h2>Загрузить/изменить фото</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ image_form.as_p }}
+    <button type="submit" class="btn btn-secondary">Обновить фото</button>
+</form>
+
+<h2>Сменить пароль</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ password_form.as_p }}
+    <button type="submit" class="btn btn-secondary">Изменить пароль</button>
+</form>
+{% endblock %}
